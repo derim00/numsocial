@@ -1,7 +1,7 @@
 # NumSocial : les réseaux sociaux sur NumWorks
 
-**NumSocial met YouTube, Snapchat et l'écran de ton ordinateur sur une
-calculatrice NumWorks.**
+**NumSocial met YouTube, Snapchat, l'écran de ton ordinateur et Minecraft en
+multijoueur sur une calculatrice NumWorks.**
 La calculatrice reste branchée en USB à un ordinateur (Mac ou Windows), qui fait
 passerelle. Tout se passe sur la calculatrice : on cherche une vidéo et on la
 regarde, on lit ses messages Snapchat et on y répond depuis le clavier, ou on
@@ -12,6 +12,7 @@ pilote l'ordinateur entier (souris, clavier, jeux) depuis la calculatrice.
 | **NumTube** | YouTube : recherche, lecture 320×180 à ~15 images/s, sous-titres | [derim00/numtube](https://github.com/derim00/numtube) |
 | **NumChat** | Snapchat : conversations, réponses avec accents, emojis, snaps photo et vidéo | [derim00/numchat](https://github.com/derim00/numchat) |
 | **NumScreen** | l'écran de l'ordinateur sur la calculatrice ; souris avec les flèches, clavier avec les touches (shift, alpha), mode jeu | [derim00/numscreen](https://github.com/derim00/numscreen) |
+| **NumBlocks** | Minecraft 1.8.8 (NumBlocks de NumPlay, par Mason Chen) avec un mode **multijoueur en ligne** : ouvre ton monde ou rejoins celui de n'importe qui | [derim00/numblocks-multiplayer](https://github.com/derim00/numblocks-multiplayer) |
 | **NumSocial** | l'appli principale : installe les applis de ton choix en un clic, et fait passerelle pour toutes | ce dépôt |
 
 ## Ce qui marche aujourd'hui
@@ -26,6 +27,10 @@ pilote l'ordinateur entier (souris, clavier, jeux) depuis la calculatrice.
   du PC en 320×200 à environ 15 images/s, la souris aux flèches, tout le clavier
   de la calculatrice (shift, alpha, majuscules) tape sur l'ordinateur, et un
   mode jeu pour bouger et sauter (Roblox...).
+- ✅ **Minecraft en multijoueur** avec NumBlocks : la liste publique des
+  parties ouvertes, « Open to LAN » pour ouvrir ton monde, les autres joueurs
+  visibles avec leur pseudo, blocs et chat partagés, depuis chez chacun (tout
+  passe par Internet).
 - ✅ **Une seule appli pour tout installer** : elle lit la version de la
   calculatrice, laisse choisir les applis et les installe sans toucher au
   firmware officiel.
@@ -78,7 +83,7 @@ open app/dist/NumSocial.app
 1. Branche la calculatrice : elle affiche « Calculatrice connectée » (sinon :
    reset au dos, puis rebranche).
 2. Sur la page de NumSocial (`http://127.0.0.1:8737`), coche **NumTube**,
-   **NumChat** et/ou **NumScreen**.
+   **NumChat**, **NumScreen** et/ou **NumBlocks**.
 3. Clique **Installer sur la calculatrice** (environ 1 minute).
 
 Le firmware officiel reste en place dans l'autre emplacement de la mémoire : un
@@ -92,6 +97,8 @@ calculatrice. Les modes d'emploi détaillés sont dans chaque dépôt :
 - **[Tutoriel NumTube](https://github.com/derim00/numtube#utilisation)**
 - **[Tutoriel NumChat](https://github.com/derim00/numchat#tutoriel--première-connexion-à-snapchat)**
   (première connexion à Snapchat, touches, snaps)
+- **[NumBlocks multijoueur](https://github.com/derim00/numblocks-multiplayer#ce-que-fait-le-multijoueur)**
+  (rejoindre une partie, ouvrir ton monde)
 - **[Tutoriel NumScreen](https://github.com/derim00/numscreen#tutoriel--autorisations-sur-mac)**
   (autorisations Mac, touches, jeux) ; le résumé est juste en dessous
 
@@ -162,7 +169,8 @@ tranquillement, pas pour un jeu de réflexes.
             │  appli NumSocial (ordinateur) : installeur + passerelle                │
             │   ├─ NumTube : yt-dlp, ffmpeg, codec 4×4, sous-titres                  │
             │   ├─ NumChat : Playwright → Chrome (profil dédié) → Snapchat Web       │
-            │   └─ NumScreen : capture d'écran (mss), souris et clavier du système   │
+            │   ├─ NumScreen : capture d'écran (mss), souris et clavier du système   │
+            │   └─ NumBlocks : serveur de partie, liste publique (MQTT)             │
             └────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -174,6 +182,11 @@ tranquillement, pas pour un jeu de réflexes.
   pendant une réception continue).
 - **Pas de pilote à installer** : interface USB propriétaire avec descripteurs
   Microsoft OS (WinUSB) pour Windows.
+- **NumBlocks** est une appli externe : le firmware NumSocial affiche les
+  applis externes et leur prête son lien USB. L'ordinateur de celui qui ouvre
+  son monde sert la partie ; les ordinateurs se trouvent par un broker MQTT
+  public (aucun compte, aucun réglage de box). Le jeu, sous GPL, est compilé à
+  partir de [son dépôt](https://github.com/derim00/numblocks-multiplayer) pendant la compilation de NumSocial.
 - **NumScreen** reprend le codec de NumTube (blocs de 4×4 pixels, seuls ceux
   qui changent sont envoyés). La calculatrice envoie chaque appui et chaque
   relâchement de touche ; shift, alpha et la souris sont gérés par
@@ -187,7 +200,7 @@ tests.
 ## Avertissements
 
 - Projet non officiel, sans lien avec NumWorks, YouTube, Snap Inc., Discord,
-  Meta ou Roblox. Les noms cités sont des marques de leurs propriétaires.
+  Meta, Roblox, Mojang ou Microsoft. Les noms cités sont des marques de leurs propriétaires.
 - Télécharger des vidéos avec yt-dlp va à l'encontre des conditions
   d'utilisation de YouTube.
 - Piloter Snapchat Web automatiquement va à l'encontre des conditions
