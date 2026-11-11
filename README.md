@@ -1,16 +1,18 @@
 # NumSocial : les réseaux sociaux sur NumWorks
 
-**NumSocial met YouTube et Snapchat sur une calculatrice NumWorks.**
+**NumSocial met YouTube, Snapchat et l'écran de ton ordinateur sur une
+calculatrice NumWorks.**
 La calculatrice reste branchée en USB à un ordinateur (Mac ou Windows), qui fait
-passerelle avec Internet. Tout se passe sur la calculatrice : on cherche une
-vidéo et on la regarde, on lit ses messages Snapchat et on y répond depuis le
-clavier.
+passerelle. Tout se passe sur la calculatrice : on cherche une vidéo et on la
+regarde, on lit ses messages Snapchat et on y répond depuis le clavier, ou on
+pilote l'ordinateur entier (souris, clavier, jeux) depuis la calculatrice.
 
 | Appli | Ce qu'elle fait | Dépôt |
 | --- | --- | --- |
 | **NumTube** | YouTube : recherche, lecture 320×180 à ~15 images/s, sous-titres | [derim00/numtube](https://github.com/derim00/numtube) |
 | **NumChat** | Snapchat : conversations, réponses avec accents, emojis, snaps photo et vidéo | [derim00/numchat](https://github.com/derim00/numchat) |
-| **NumSocial** | l'appli principale : installe NumTube et/ou NumChat en un clic, et fait passerelle pour les deux | ce dépôt |
+| **NumScreen** | l'écran de l'ordinateur sur la calculatrice ; souris avec les flèches, clavier avec les touches (shift, alpha), mode jeu | [derim00/numscreen](https://github.com/derim00/numscreen) |
+| **NumSocial** | l'appli principale : installe les applis de ton choix en un clic, et fait passerelle pour toutes | ce dépôt |
 
 ## Ce qui marche aujourd'hui
 
@@ -20,6 +22,10 @@ clavier.
 - ✅ **Snapchat sur la calculatrice** avec NumChat : liste des conversations,
   messages en direct, saisie avec majuscules et accents, emojis en couleur,
   snaps photo et vidéo affichés sur demande.
+- ✅ **L'écran de l'ordinateur sur la calculatrice** avec NumScreen : l'image
+  du PC en 320×200 à environ 15 images/s, la souris aux flèches, tout le clavier
+  de la calculatrice (shift, alpha, majuscules) tape sur l'ordinateur, et un
+  mode jeu pour bouger et sauter (Roblox...).
 - ✅ **Une seule appli pour tout installer** : elle lit la version de la
   calculatrice, laisse choisir les applis et les installe sans toucher au
   firmware officiel.
@@ -31,7 +37,6 @@ clavier.
 | | Fonction | Idée |
 | --- | --- | --- |
 | 🔜 | **Discord** | Lire et écrire dans tes messages privés et tes salons, sur le modèle de NumChat |
-| 🔜 | **Partage d'écran** | Afficher sur la calculatrice l'écran de l'ordinateur auquel elle est branchée, en reprenant le codec vidéo de NumTube |
 | 🔜 | **WhatsApp** | Tes discussions WhatsApp sur la calculatrice, à travers WhatsApp Web |
 
 Chaque nouvelle appli rejoindra le même firmware et la même appli NumSocial : à
@@ -73,7 +78,7 @@ open app/dist/NumSocial.app
 1. Branche la calculatrice : elle affiche « Calculatrice connectée » (sinon :
    reset au dos, puis rebranche).
 2. Sur la page de NumSocial (`http://127.0.0.1:8737`), coche **NumTube**,
-   **NumChat** ou les deux.
+   **NumChat** et/ou **NumScreen**.
 3. Clique **Installer sur la calculatrice** (environ 1 minute).
 
 Le firmware officiel reste en place dans l'autre emplacement de la mémoire : un
@@ -87,6 +92,55 @@ calculatrice. Les modes d'emploi détaillés sont dans chaque dépôt :
 - **[Tutoriel NumTube](https://github.com/derim00/numtube#utilisation)**
 - **[Tutoriel NumChat](https://github.com/derim00/numchat#tutoriel--première-connexion-à-snapchat)**
   (première connexion à Snapchat, touches, snaps)
+- **[Tutoriel NumScreen](https://github.com/derim00/numscreen#tutoriel--autorisations-sur-mac)**
+  (autorisations Mac, touches, jeux) ; le résumé est juste en dessous
+
+## NumScreen : l'écran de l'ordinateur sur la calculatrice
+
+### Autorisations (Mac, une seule fois)
+
+macOS demande deux autorisations pour qu'une appli voie l'écran et pilote la
+souris. Dans **Réglages Système > Confidentialité et sécurité** :
+
+1. **Enregistrement de l'écran** (ou « Enregistrement de l'écran et audio ») :
+   active **NumSocial**, puis quitte et relance NumSocial.
+2. **Accessibilité** : active **NumSocial**.
+
+Tant qu'il en manque une, la calculatrice l'écrit en bas de l'écran. Sous
+Windows, il n'y a rien à autoriser.
+
+### Touches
+
+Ouvre **NumScreen** sur la calculatrice : l'écran du PC s'affiche en haut, le
+mode et l'état de shift/alpha en bas.
+
+| Touche | Mode souris | Mode jeu |
+| --- | --- | --- |
+| flèches | déplacent la souris (maintenir : de plus en plus vite) | flèches du clavier |
+| `OK` | clic (deux fois vite : double clic ; maintenir : glisser) | `Espace` (sauter) |
+| boîte à outils | clic droit (maintenu + flèches : tourner la caméra) | clic droit |
+| `alpha` + `▲` `▼` | molette | |
+| `x,n,t` | passer en mode jeu | revenir en mode souris |
+
+Dans les deux modes :
+
+| Touche | Sur l'ordinateur |
+| --- | --- |
+| lettres | par défaut : les lettres écrites au-dessus des touches |
+| `shift` | passe aux chiffres, puis revient aux lettres |
+| `alpha` | une majuscule (deux fois : majuscules verrouillées) ; en chiffres : le symbole jaune `[ ] { } _ = < >` |
+| `var` | `Z` `Q` `S` `D` sur `8` `4` `5` `6`, pour jouer en AZERTY (`var` à nouveau : retour) |
+| `EXE` / `retour` / `⌫` | `Entrée` / `Échap` / `Retour arrière` |
+| `Ans` / `×10ˣ` | `Espace` / apostrophe |
+| en chiffres : `exp` / `ln` / `log` | `Maj` / `Ctrl` / `Alt` de l'ordinateur |
+| maison | arrêter le partage |
+
+Une touche maintenue sur la calculatrice reste maintenue sur l'ordinateur.
+
+**Pour jouer** (Roblox par exemple) : `x,n,t` passe en mode jeu, `var` met
+`Z` `Q` `S` `D` sur `8` `4` `5` `6`, `OK` fait sauter. L'image fait 320×200 à
+environ 15 images/s, avec un peu de retard : assez pour naviguer et jouer
+tranquillement, pas pour un jeu de réflexes.
 
 ## Ce qu'il faut
 
@@ -107,7 +161,8 @@ calculatrice. Les modes d'emploi détaillés sont dans chaque dépôt :
             ┌───────────────────────────────┴───────────────────────────────────────┐
             │  appli NumSocial (ordinateur) : installeur + passerelle                │
             │   ├─ NumTube : yt-dlp, ffmpeg, codec 4×4, sous-titres                  │
-            │   └─ NumChat : Playwright → Chrome (profil dédié) → Snapchat Web       │
+            │   ├─ NumChat : Playwright → Chrome (profil dédié) → Snapchat Web       │
+            │   └─ NumScreen : capture d'écran (mss), souris et clavier du système   │
             └────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -119,15 +174,20 @@ calculatrice. Les modes d'emploi détaillés sont dans chaque dépôt :
   pendant une réception continue).
 - **Pas de pilote à installer** : interface USB propriétaire avec descripteurs
   Microsoft OS (WinUSB) pour Windows.
+- **NumScreen** reprend le codec de NumTube (blocs de 4×4 pixels, seuls ceux
+  qui changent sont envoyés). La calculatrice envoie chaque appui et chaque
+  relâchement de touche ; shift, alpha et la souris sont gérés par
+  l'ordinateur, avec les interfaces du système (CoreGraphics sur Mac,
+  SendInput sous Windows).
 
-Ce dépôt contient le même code que [NumTube](https://github.com/derim00/numtube)
-et [NumChat](https://github.com/derim00/numchat) : patch complet, appli, scripts,
+Ce dépôt contient le même code que [NumTube](https://github.com/derim00/numtube),
+[NumChat](https://github.com/derim00/numchat) et [NumScreen](https://github.com/derim00/numscreen) : patch complet, appli, scripts,
 tests.
 
 ## Avertissements
 
-- Projet non officiel, sans lien avec NumWorks, YouTube, Snap Inc., Discord ou
-  Meta. Les noms cités sont des marques de leurs propriétaires.
+- Projet non officiel, sans lien avec NumWorks, YouTube, Snap Inc., Discord,
+  Meta ou Roblox. Les noms cités sont des marques de leurs propriétaires.
 - Télécharger des vidéos avec yt-dlp va à l'encontre des conditions
   d'utilisation de YouTube.
 - Piloter Snapchat Web automatiquement va à l'encontre des conditions
