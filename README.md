@@ -7,11 +7,16 @@ passerelle. Tout se passe sur la calculatrice : on cherche une vidéo et on la
 regarde, on lit ses messages Snapchat et on y répond depuis le clavier, ou on
 pilote l'ordinateur entier (souris, clavier, jeux) depuis la calculatrice.
 
+> [!WARNING]
+> **NumTube est partiellement en panne.** La recherche marche, mais le lancement
+> des vidéos peut prendre plus d'une minute, voire échouer. On règle ça bientôt.
+
 | Appli | Ce qu'elle fait | Dépôt |
 | --- | --- | --- |
 | **NumTube** | YouTube : recherche, lecture 320×180 à environ 15 images/s, sous-titres | [derim00/numtube](https://github.com/derim00/numtube) |
 | **NumChat** | Snapchat : conversations, réponses avec accents, emojis, snaps photo et vidéo | [derim00/numchat](https://github.com/derim00/numchat) |
 | **NumScreen** | l'écran de l'ordinateur sur la calculatrice ; souris avec les flèches, clavier avec les touches (shift, alpha), mode jeu | [derim00/numscreen](https://github.com/derim00/numscreen) |
+| **NumCam** | la caméra du téléphone sur la calculatrice, en plein écran : photos et vidéos, enregistrées sur l'ordinateur | inclus |
 | **NumBlocks** | Minecraft 1.8.8 (NumBlocks de NumPlay, par Mason Chen) avec un mode **multijoueur en ligne** : ouvre ton monde ou rejoins celui de n'importe qui | [derim00/numblocks-multiplayer](https://github.com/derim00/numblocks-multiplayer) |
 | **NumSocial** | l'appli principale : installe les applis de ton choix en un clic, et fait passerelle pour toutes | ce dépôt |
 
@@ -27,6 +32,10 @@ pilote l'ordinateur entier (souris, clavier, jeux) depuis la calculatrice.
   du PC en 320×200 à environ 15 images/s, la souris aux flèches, tout le clavier
   de la calculatrice (shift, alpha, majuscules) tape sur l'ordinateur, et un
   mode jeu pour bouger et sauter (Roblox...).
+- ✅ **La caméra du téléphone** avec NumCam : le téléphone ouvre une page sur ton
+  Wi-Fi (QR code sur la page de NumSocial), la calculatrice devient le viseur en
+  plein écran ; `OK` prend une photo, `EXE` filme, tout est enregistré dans
+  Images/NumCam.
 - ✅ **Minecraft en multijoueur** avec NumBlocks : la liste publique des
   parties ouvertes, « Open to LAN » pour ouvrir ton monde, les autres joueurs
   visibles avec leur pseudo, blocs et chat partagés, depuis chez chacun (tout
@@ -83,7 +92,7 @@ open app/dist/NumSocial.app
 1. Branche la calculatrice : elle affiche « Calculatrice connectée » (sinon :
    reset au dos, puis rebranche).
 2. Sur la page de NumSocial (`http://127.0.0.1:8737`), coche **NumTube**,
-   **NumChat**, **NumScreen** et/ou **NumBlocks**.
+   **NumChat**, **NumScreen**, **NumCam** et/ou **NumBlocks**.
 3. Clique **Installer sur la calculatrice** (environ 1 minute).
 
 Le firmware officiel reste en place dans l'autre emplacement de la mémoire : un

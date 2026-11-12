@@ -962,7 +962,7 @@ def screen_service(opts: argparse.Namespace):
 
             kind = getattr(opts, "numscreen", "real")
             _SCREEN_SERVICE = screen.ScreenService(
-                lambda: TileEncoder(screen.ROWS), clean_text, truncate_utf8, log, kind)
+                lambda rows=None: TileEncoder(rows or screen.ROWS), clean_text, truncate_utf8, log, kind)
         return _SCREEN_SERVICE
 
 
@@ -1007,6 +1007,13 @@ class Session:
         log(f"  {len(entries)} resultats envoyes")
 
     def handle(self, frame_type: int, payload: bytes) -> None:
+        if os.environ.get("NUMSOCIAL_DEBUG") and frame_type not in (0x82, 0x83, 0x47, 0x9C):
+            log(f"  <- trame 0x{frame_type:02x} ({len(payload)} octets)")
+        if self.screen is not None and not (T_SCREEN_FIRST <= frame_type <= T_SCREEN_LAST):
+            # Another app talks (NumTube, NumChat, NumBlocks, a new connection): the screen or the
+            # camera is no longer on, stop sending pictures at once.
+            if frame_type != T_LOG:
+                self.screen.stop()
         if T_CHAT_FIRST <= frame_type <= T_CHAT_LAST:
             if self.chat is None:
                 self.chat = chat_service(self.opts)
