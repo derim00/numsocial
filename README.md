@@ -7,10 +7,6 @@ passerelle. Tout se passe sur la calculatrice : on cherche une vidéo et on la
 regarde, on lit ses messages Snapchat et on y répond depuis le clavier, ou on
 pilote l'ordinateur entier (souris, clavier, jeux) depuis la calculatrice.
 
-> [!WARNING]
-> **NumTube est partiellement en panne.** La recherche marche, mais le lancement
-> des vidéos peut prendre plus d'une minute, voire échouer. On règle ça bientôt.
-
 | Appli | Ce qu'elle fait | Dépôt |
 | --- | --- | --- |
 | **NumTube** | YouTube : recherche, lecture 320×180 à environ 15 images/s, sous-titres | [derim00/numtube](https://github.com/derim00/numtube) |
