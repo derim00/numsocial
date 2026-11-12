@@ -9,7 +9,7 @@ pilote l'ordinateur entier (souris, clavier, jeux) depuis la calculatrice.
 
 | Appli | Ce qu'elle fait | Dépôt |
 | --- | --- | --- |
-| **NumTube** | YouTube : recherche, lecture 320×180 à ~15 images/s, sous-titres | [derim00/numtube](https://github.com/derim00/numtube) |
+| **NumTube** | YouTube : recherche, lecture 320×180 à environ 15 images/s, sous-titres | [derim00/numtube](https://github.com/derim00/numtube) |
 | **NumChat** | Snapchat : conversations, réponses avec accents, emojis, snaps photo et vidéo | [derim00/numchat](https://github.com/derim00/numchat) |
 | **NumScreen** | l'écran de l'ordinateur sur la calculatrice ; souris avec les flèches, clavier avec les touches (shift, alpha), mode jeu | [derim00/numscreen](https://github.com/derim00/numscreen) |
 | **NumBlocks** | Minecraft 1.8.8 (NumBlocks de NumPlay, par Mason Chen) avec un mode **multijoueur en ligne** : ouvre ton monde ou rejoins celui de n'importe qui | [derim00/numblocks-multiplayer](https://github.com/derim00/numblocks-multiplayer) |
@@ -30,7 +30,7 @@ pilote l'ordinateur entier (souris, clavier, jeux) depuis la calculatrice.
 - ✅ **Minecraft en multijoueur** avec NumBlocks : la liste publique des
   parties ouvertes, « Open to LAN » pour ouvrir ton monde, les autres joueurs
   visibles avec leur pseudo, blocs et chat partagés, depuis chez chacun (tout
-  passe par Internet).
+  passe par Internet), ou en LAN entre ordinateurs du même Wi-Fi, sans Internet.
 - ✅ **Une seule appli pour tout installer** : elle lit la version de la
   calculatrice, laisse choisir les applis et les installe sans toucher au
   firmware officiel.
