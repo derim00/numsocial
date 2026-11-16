@@ -156,10 +156,10 @@ tranquillement, pas pour un jeu de réflexes.
 
 ## Ce qu'il faut
 
-- Une NumWorks **N0120** ou **N0115** en version officielle **26.4.0** (testé)
+- Une NumWorks **N0120**, **N0115** ou **N0110** en version officielle **26.4.0** (testé)
 - Un câble USB qui transfère les données
 - Un **Mac** (testé avec une calculatrice) ou un **PC Windows 10/11** (compilé
-  et vérifié par GitHub, pas encore essayé avec une calculatrice)
+  et vérifié par GitHub, déjà essayé avec une calculatrice)
 - Pour NumChat : **Google Chrome** (ou Microsoft Edge sous Windows) et un compte
   Snapchat
 

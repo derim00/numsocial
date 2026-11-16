@@ -4,7 +4,7 @@
 #
 #   1. downloads Epsilon from github.com/numworks/epsilon at the pinned commit
 #   2. applies patches/numsocial-epsilon.patch (Termia's USB link + NumTube + NumChat)
-#   3. compiles the firmware for N0120 and N0115, slots A and B
+#   3. compiles the firmware for N0120 and N0115 and N0110, slots A and B
 #   4. puts them in app/firmware/, where the NumSocial app installer finds them
 #   5. downloads NumBlocks Multiplayer (github.com/derim00/numblocks-multiplayer, GPL) at its pinned
 #      commit and builds it for each image (an external app, linked at that image's addresses)
@@ -19,7 +19,7 @@ NB_COMMIT="$(cat "$ROOT/NUMBLOCKS_COMMIT")"
 NB_SRC="$ROOT/numblocks"
 SRC="$ROOT/firmware"
 VENV="$ROOT/.venv"
-MODELS="${MODELS:-n0120 n0115}"
+MODELS="${MODELS:-n0120 n0115 n0110}"
 JOBS="$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)"
 
 say() { printf '\n\033[1m%s\033[0m\n' "$*"; }

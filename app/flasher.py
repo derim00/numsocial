@@ -20,7 +20,7 @@ import numworks_dfu as dfu
 HERE = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
 FIRMWARE_DIR = os.path.join(HERE, "firmware")
 NUMWORKS_VID, DFU_PID = 0x0483, 0xA291
-SUPPORTED_MODELS = ("n0115", "n0120")
+SUPPORTED_MODELS = ("n0110", "n0115", "n0120")
 # Slot start addresses of the official kernel, whose header holds the version.
 KERNEL_STARTS = {"A": 0x90000000, "B": 0x90400000}
 KERNEL_HEADER_MAGIC = struct.pack("<I", 0xDEC00DF0)
