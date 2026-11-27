@@ -4,7 +4,7 @@ et Minecraft multijoueur (NumBlocks) sur ta NumWorks
 
 Ce qu'il faut
 - Une NumWorks N0120 ou N0115 (le modèle est écrit au dos), en version
-  officielle 26.4.0 (testé).
+  officielle 26.4.1 (testé).
 - Un câble USB qui transfère les données (pas seulement la charge).
 - Cet ordinateur reste branché à la calculatrice : c'est lui qui va chercher
   les vidéos (NumTube) et les messages (NumChat).

@@ -165,7 +165,7 @@ def patched_image(model: str, slot: str, version: str, apps=("numtube", "numchat
         raise InstallError("Choisis au moins une appli à installer.")
     apps = [app for app in apps if app in HOMEBREW_BITS]
     if not VERSION_RE.match(version) or len(version) > 7:
-        raise InstallError("Version invalide : « %s » (exemple : 26.4.0)." % version)
+        raise InstallError("Version invalide : « %s » (exemple : 26.4.1)." % version)
     path = os.path.join(FIRMWARE_DIR, f"numsocial-{model}-{slot}.dfu")
     if not os.path.exists(path):
         raise InstallError(f"Pas de firmware pour le modèle {model}.")

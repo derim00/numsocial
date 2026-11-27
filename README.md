@@ -156,7 +156,7 @@ tranquillement, pas pour un jeu de réflexes.
 
 ## Ce qu'il faut
 
-- Une NumWorks **N0120**, **N0115** ou **N0110** en version officielle **26.4.0** (testé)
+- Une NumWorks **N0120**, **N0115** ou **N0110** en version officielle **26.4.1** (testé)
 - Un câble USB qui transfère les données
 - Un **Mac** (testé avec une calculatrice) ou un **PC Windows 10/11** (compilé
   et vérifié par GitHub, déjà essayé avec une calculatrice)

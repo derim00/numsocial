@@ -98,7 +98,7 @@
     <p class="hint" style="margin:4px 0 0">Le firmware officiel n'est pas effacé : les applis vont dans l'autre emplacement.
       Un reset au dos de la calculatrice ramène le firmware officiel.</p>
     <label for="version">Version officielle de la calculatrice</label>
-    <input id="version" placeholder="26.4.0" autocomplete="off">
+    <input id="version" placeholder="26.4.1" autocomplete="off">
     <div class="hint" id="versionHint">Sur la calculatrice : Paramètres → À propos → Version.</div>
     <label>Applis à installer</label>
     <div class="apps">
@@ -210,7 +210,7 @@ async function refresh() {
 $("go").addEventListener("click", async () => {
   const version = $("version").value.trim();
   if (!/^\d{1,2}\.\d{1,2}\.\d{1,2}$/.test(version)) {
-    $("result").textContent = "Indique la version officielle, par exemple 26.4.0.";
+    $("result").textContent = "Indique la version officielle, par exemple 26.4.1.";
     $("result").className = "result err";
     $("version").focus();
     return;
