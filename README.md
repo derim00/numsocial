@@ -1,6 +1,6 @@
 # NumSocial : les réseaux sociaux sur NumWorks
 
-**NumSocial met YouTube, Snapchat, l'écran de ton ordinateur et Minecraft en
+**NumSocial met YouTube, TikTok, Snapchat, l'écran de ton ordinateur et Minecraft en
 multijoueur sur une calculatrice NumWorks.**
 La calculatrice reste branchée en USB à un ordinateur (Mac ou Windows), qui fait
 passerelle. Tout se passe sur la calculatrice : on cherche une vidéo et on la
@@ -10,6 +10,7 @@ pilote l'ordinateur entier (souris, clavier, jeux) depuis la calculatrice.
 | Appli | Ce qu'elle fait | Dépôt |
 | --- | --- | --- |
 | **NumTube** | YouTube : recherche, lecture 320×180 à environ 15 images/s, sous-titres | [derim00/numtube](https://github.com/derim00/numtube) |
+| **NumTok** | TikTok : le fil « Pour toi » ou celui d'un créateur, une vidéo verticale à la fois, légende, j'aime et commentaires ; flèche du bas pour la suivante | inclus |
 | **NumChat** | Snapchat : conversations, réponses avec accents, emojis, snaps photo et vidéo | [derim00/numchat](https://github.com/derim00/numchat) |
 | **NumScreen** | l'écran de l'ordinateur sur la calculatrice ; souris avec les flèches, clavier avec les touches (shift, alpha), mode jeu | [derim00/numscreen](https://github.com/derim00/numscreen) |
 | **NumCam** | la caméra du téléphone sur la calculatrice, en plein écran : photos et vidéos, enregistrées sur l'ordinateur | inclus |
@@ -21,6 +22,11 @@ pilote l'ordinateur entier (souris, clavier, jeux) depuis la calculatrice.
 - ✅ **YouTube sur la calculatrice** avec NumTube : la vidéo est décodée sur
   l'ordinateur, compressée en blocs de 4×4 pixels et envoyée image par image ;
   les sous-titres remplacent le son, que la NumWorks n'a pas.
+- ✅ **TikTok sur la calculatrice** avec NumTok : la vidéo verticale au
+  milieu de l'écran (136×240, environ 15 images/s, en boucle), l'auteur et la
+  légende à gauche, les j'aime, commentaires et partages à droite. `▼` passe à
+  la suivante, `▲` revient, `OK` met en pause. Les vidéos suivantes sont
+  téléchargées d'avance : passer de l'une à l'autre est quasi immédiat.
 - ✅ **Snapchat sur la calculatrice** avec NumChat : liste des conversations,
   messages en direct, saisie avec majuscules et accents, emojis en couleur,
   snaps photo et vidéo affichés sur demande.
@@ -87,7 +93,7 @@ open app/dist/NumSocial.app
 
 1. Branche la calculatrice : elle affiche « Calculatrice connectée » (sinon :
    reset au dos, puis rebranche).
-2. Sur la page de NumSocial (`http://127.0.0.1:8737`), coche **NumTube**,
+2. Sur la page de NumSocial (`http://127.0.0.1:8737`), coche **NumTube**, **NumTok**,
    **NumChat**, **NumScreen**, **NumCam** et/ou **NumBlocks**.
 3. Clique **Installer sur la calculatrice** (environ 1 minute).
 
@@ -106,6 +112,33 @@ calculatrice. Les modes d'emploi détaillés sont dans chaque dépôt :
   (rejoindre une partie, ouvrir ton monde)
 - **[Tutoriel NumScreen](https://github.com/derim00/numscreen#tutoriel--autorisations-sur-mac)**
   (autorisations Mac, touches, jeux) ; le résumé est juste en dessous
+
+## NumTok : TikTok sur la calculatrice
+
+Ouvre **NumTok** sur la calculatrice (NumSocial ouvert sur l'ordinateur) :
+
+- `EXE` sans rien taper : le fil **Pour toi**, les dernières vidéos d'une
+  quinzaine de créateurs connus, mélangées ;
+- ou tape le **pseudo** d'un créateur puis `EXE`. Le clavier n'a ni point ni
+  tiret bas faciles : tape un espace à la place (`khaby lame` trouve
+  `@khaby.lame`).
+
+| Touche | Pendant les vidéos |
+| --- | --- |
+| `▼` (ou `▶`) | vidéo suivante |
+| `▲` (ou `◀`) | vidéo précédente |
+| `OK` / `EXE` | pause / lecture |
+| `retour` | revenir à la recherche |
+
+La vidéo est au milieu de l'écran (136×240, environ 15 images/s, en boucle
+comme sur TikTok), l'auteur, la légende et le son à gauche, les j'aime,
+commentaires, partages et vues à droite. Il n'y a pas de son (la NumWorks n'a
+pas de haut-parleur). Les hashtags ne marchent pas : TikTok les refuse aux
+outils comme yt-dlp.
+
+Pour changer les créateurs de « Pour toi », lance la passerelle avec la
+variable `NUMTOK_CREATORS`, par exemple
+`NUMTOK_CREATORS="squeezie,khaby.lame,zachking" ./numsocial`.
 
 ## NumScreen : l'écran de l'ordinateur sur la calculatrice
 
@@ -173,6 +206,7 @@ tranquillement, pas pour un jeu de réflexes.
             ┌───────────────────────────────┴───────────────────────────────────────┐
             │  appli NumSocial (ordinateur) : installeur + passerelle                │
             │   ├─ NumTube : yt-dlp, ffmpeg, codec 4×4, sous-titres                  │
+            │   ├─ NumTok : yt-dlp (TikTok), vidéos téléchargées d'avance, codec 4×4 │
             │   ├─ NumChat : Playwright → Chrome (profil dédié) → Snapchat Web       │
             │   ├─ NumScreen : capture d'écran (mss), souris et clavier du système   │
             │   └─ NumBlocks : serveur de partie, liste publique (MQTT)             │
@@ -207,7 +241,7 @@ tests.
 - Projet non officiel, sans lien avec NumWorks, YouTube, Snap Inc., Discord,
   Meta, Roblox, Mojang ou Microsoft. Les noms cités sont des marques de leurs propriétaires.
 - Télécharger des vidéos avec yt-dlp va à l'encontre des conditions
-  d'utilisation de YouTube.
+  d'utilisation de YouTube et de TikTok.
 - Piloter Snapchat Web automatiquement va à l'encontre des conditions
   d'utilisation de Snapchat et peut faire **verrouiller ton compte** : essaie
   d'abord avec un compte secondaire.

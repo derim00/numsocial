@@ -44,6 +44,7 @@ def main() -> int:
         "--hidden-import", "mss",
         "--hidden-import", "numblocks_service",
         "--hidden-import", "numcam_service",
+        "--hidden-import", "numtok_service",
         "--hidden-import", "segno",
         "--hidden-import", "paho.mqtt.client",
         # NumChat drives Chrome through Playwright's driver (no browser bundled:

@@ -104,6 +104,9 @@
     <div class="apps">
       <label class="app"><input type="checkbox" id="appNumtube" checked>
         <div><b>NumTube</b><span>YouTube sur la calculatrice, avec les sous-titres.</span></div></label>
+      <label class="app"><input type="checkbox" id="appNumtok" checked>
+        <div><b>NumTok</b><span>TikTok sur la calculatrice : le fil « Pour toi » ou les vidéos d'un créateur, une vidéo verticale à la fois,
+          avec la légende, les j'aime et les commentaires. Flèche du bas : la suivante.</span></div></label>
       <label class="app"><input type="checkbox" id="appNumchat" checked>
         <div><b>NumChat</b><span>Tes messages Snapchat, à lire et à écrire depuis la calculatrice.
           Il faut Google Chrome sur cet ordinateur : la première fois, connecte-toi à Snapchat dans la fenêtre qui s'ouvre.</span></div></label>
@@ -175,7 +178,7 @@ async function refresh() {
       `Modèle ${d.model.toUpperCase()}. Clique sur « Installer ».`);
   } else if (s.calculator === "numtube") {
     setStatus("ok", "La calculatrice est connectée",
-      "Les vidéos (NumTube), les messages (NumChat) et l'écran partagé (NumScreen) passent par cet ordinateur.");
+      "Les vidéos (NumTube, NumTok), les messages (NumChat) et l'écran partagé (NumScreen) passent par cet ordinateur.");
   } else if (s.calculator === "error") {
     setStatus("warn", "La calculatrice est branchée mais inaccessible",
       linux ? "Sous Linux, autorise l'accès USB une fois :" : (s.detail.error || ""),
@@ -184,7 +187,7 @@ async function refresh() {
     setStatus("", "Branche ta calculatrice", "", [
       "Relie-la à cet ordinateur avec un câble USB qui transfère les données.",
       "Pour installer : elle doit afficher « Calculatrice connectée ». Sinon, appuie sur reset au dos puis rebranche.",
-      "Si c'est déjà installé : ouvre NumTube, NumChat, NumScreen, NumCam ou NumBlocks sur la calculatrice.",
+      "Si c'est déjà installé : ouvre NumTube, NumTok, NumChat, NumScreen, NumCam ou NumBlocks sur la calculatrice.",
     ]);
   }
 
@@ -215,7 +218,7 @@ $("go").addEventListener("click", async () => {
     $("version").focus();
     return;
   }
-  const apps = [["numtube", "appNumtube"], ["numchat", "appNumchat"], ["numscreen", "appNumscreen"], ["numcam", "appNumcam"], ["numblocks", "appNumblocks"]]
+  const apps = [["numtube", "appNumtube"], ["numtok", "appNumtok"], ["numchat", "appNumchat"], ["numscreen", "appNumscreen"], ["numcam", "appNumcam"], ["numblocks", "appNumblocks"]]
     .filter(([, id]) => $(id).checked).map(([name]) => name);
   if (!apps.length) {
     $("result").textContent = "Choisis au moins une appli.";
