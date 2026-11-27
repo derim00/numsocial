@@ -235,7 +235,7 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(409, b"", "text/plain")
                 return
             version = str(body.get("version", "")).strip()
-            apps = [str(a) for a in body.get("apps") or ["numtube", "numchat", "numscreen", "numcam", "numblocks"]]
+            apps = [str(a) for a in body.get("apps") or ["numtube", "numtok", "numchat", "numscreen", "numcam", "numblocks"]]
             threading.Thread(target=run_install, args=(version, apps), daemon=True).start()
             self._send(202, b"{}", "application/json")
         elif self.path == "/api/quit":

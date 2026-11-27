@@ -124,6 +124,8 @@ T_CHAT_FIRST, T_CHAT_LAST = 0x60, 0x72
 T_SCREEN_FIRST, T_SCREEN_LAST = 0x80, 0x8F
 # NumBlocks multiplayer frames, handled by gateway/numblocks_service.py.
 T_BLOCKS_FIRST, T_BLOCKS_LAST = 0x90, 0xA3
+# NumTok (TikTok) frames, handled by gateway/numtok_service.py.
+T_TOK_FIRST, T_TOK_LAST = 0xB0, 0xBF
 
 CTRL_STOP = 0
 CTRL_PAUSE = 1
@@ -1019,6 +1021,13 @@ def blocks_service():
     return numblocks_service.NumBlocksService(log)
 
 
+def tok_service():
+    """NumTok (TikTok), one per connected calculator."""
+    import numtok_service
+
+    return numtok_service.TokService(sys.modules[__name__], log)
+
+
 class Session:
     def __init__(self, link: SerialLink, opts: argparse.Namespace) -> None:
         self.link = link
@@ -1027,6 +1036,7 @@ class Session:
         self.chat = None
         self.screen = None
         self.blocks = None
+        self.tok = None
 
     def stop_player(self) -> None:
         if self.player:
@@ -1053,13 +1063,20 @@ class Session:
         log(f"  {len(entries)} resultats envoyes")
 
     def handle(self, frame_type: int, payload: bytes) -> None:
-        if os.environ.get("NUMSOCIAL_DEBUG") and frame_type not in (0x82, 0x83, 0x47, 0x9C):
+        if os.environ.get("NUMSOCIAL_DEBUG") and frame_type not in (0x82, 0x83, 0x47, 0x9C, 0xB5):
             log(f"  <- trame 0x{frame_type:02x} ({len(payload)} octets)")
         if self.screen is not None and not (T_SCREEN_FIRST <= frame_type <= T_SCREEN_LAST):
             # Another app talks (NumTube, NumChat, NumBlocks, a new connection): the screen or the
             # camera is no longer on, stop sending pictures at once.
             if frame_type != T_LOG:
                 self.screen.stop()
+        if self.tok is not None and frame_type != T_LOG and not (T_TOK_FIRST <= frame_type <= T_TOK_LAST):
+            self.tok.stop()  # another app talks: NumTok is no longer on screen
+        if T_TOK_FIRST <= frame_type <= T_TOK_LAST:
+            if self.tok is None:
+                self.tok = tok_service()
+            self.tok.handle(self.link, frame_type, payload)
+            return
         if T_CHAT_FIRST <= frame_type <= T_CHAT_LAST:
             if self.chat is None:
                 self.chat = chat_service(self.opts)
@@ -1085,6 +1102,8 @@ class Session:
                 self.screen.detach(self.link)
             if self.blocks is not None:
                 self.blocks.detach(self.link)
+            if self.tok is not None:
+                self.tok.stop()
             self.link.send(T_HELLO_ACK, b"numtube/1")
         elif frame_type == T_SEARCH:
             query = payload.decode("utf-8", "ignore").strip()
@@ -1133,6 +1152,8 @@ class Session:
                 self.screen.detach(self.link)
             if self.blocks is not None:
                 self.blocks.detach(self.link)
+            if self.tok is not None:
+                self.tok.detach(self.link)
 
 
 def serve_usb(opts: argparse.Namespace, status=None) -> None:

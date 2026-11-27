@@ -25,7 +25,7 @@ Une page s'ouvre dans ton navigateur. Laisse NumSocial ouvert.
 - Branche la calculatrice. Elle affiche « Calculatrice connectée »
   (sinon : reset au dos avec un trombone, puis rebranche).
 - Sur la page : vérifie la version officielle (lue automatiquement), coche
-  les applis voulues (NumTube, NumChat, NumScreen, NumCam, NumBlocks), clique « Installer ».
+  les applis voulues (NumTube, NumTok, NumChat, NumScreen, NumCam, NumBlocks), clique « Installer ».
 - Environ 1 minute. La calculatrice redémarre avec un écran
   « UNOFFICIAL SOFTWARE » : c'est normal. Les applis sont en bas de l'accueil.
 
@@ -33,6 +33,16 @@ Une page s'ouvre dans ton navigateur. Laisse NumSocial ouvert.
 - Tape ta recherche, EXE. Choisis une vidéo avec les flèches, OK.
 - Pendant la vidéo : OK pause, gauche/droite ±10 s, haut/bas ±1 min,
   retour arrête. Pas de son : les sous-titres s'affichent sous l'image.
+
+3 bis. NumTok (TikTok)
+- EXE sans rien taper : le fil « Pour toi » (les dernières vidéos de
+  créateurs connus, mélangées). Ou tape le pseudo d'un créateur puis EXE
+  (les espaces remplacent le point ou le tiret bas : « khaby lame »).
+- La vidéo verticale est au milieu, la légende à gauche, les j'aime,
+  commentaires et partages à droite. Bas : vidéo suivante, haut : la
+  précédente, OK : pause, retour : revenir à la recherche. Les vidéos
+  tournent en boucle, comme sur TikTok. Pas de son.
+- Les hashtags ne marchent pas (TikTok les bloque) : cherche un pseudo.
 
 4. NumChat (Snapchat)
 - Première fois : ouvre NumChat sur la calculatrice. Une fenêtre Chrome

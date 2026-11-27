@@ -29,10 +29,11 @@ VERSION_RE = re.compile(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$")
 # Mask of the homebrew apps hidden on the Home screen, found by its magic
 # (see firmware epsilon/apps/home/homebrew_apps.cpp).
 HOMEBREW_MAGIC = b"NUMAPPS-HIDDEN1\0"
-HOMEBREW_BITS = {"numtube": 1, "numchat": 2, "numscreen": 4, "numcam": 8}
+HOMEBREW_BITS = {"numtube": 1, "numchat": 2, "numscreen": 4, "numcam": 8, "numtok": 16}
 # External apps, installed with the firmware in its slot's external apps area (see nwa/build_nwa.py).
 EXTERNAL_APPS = {"numblocks": "NumBlocks"}
-NAMES = {"numtube": "NumTube", "numchat": "NumChat", "numscreen": "NumScreen", "numcam": "NumCam", **EXTERNAL_APPS}
+NAMES = {"numtube": "NumTube", "numchat": "NumChat", "numscreen": "NumScreen", "numcam": "NumCam", "numtok": "NumTok",
+         **EXTERNAL_APPS}
 
 
 def _usb_backend():

@@ -1,5 +1,5 @@
 diff --git a/epsilon/Makefile b/epsilon/Makefile
-index 282670fb86..7f91c9c1c9 100644
+index 282670fb86..f8eea973ab 100644
 --- a/epsilon/Makefile
 +++ b/epsilon/Makefile
 @@ -2,7 +2,7 @@
@@ -74,7 +74,7 @@ index 22d935a989..e51baf487a 100644
  
  $(call i18n_without_universal,home/i18n/base)
 diff --git a/epsilon/apps/home/apps_layout.csv b/epsilon/apps/home/apps_layout.csv
-index e0273c401b..bec9b5bc12 100644
+index e0273c401b..ef8947cc5c 100644
 --- a/epsilon/apps/home/apps_layout.csv
 +++ b/epsilon/apps/home/apps_layout.csv
 @@ -1,5 +1,5 @@
@@ -83,11 +83,11 @@ index e0273c401b..bec9b5bc12 100644
 -Variant2,calculation,graph,solver,regression,sequence,distributions,statistics,code,elements,inference,finance,settings
 -Variant3,calculation,graph,solver,statistics,distributions,sequence,regression,inference,finance,elements,code,settings
 -Variant4,calculation,graph,solver,statistics,regression,sequence,distributions,inference,finance,elements,code,settings
-+Default,calculation,graph,code,statistics,distributions,solver,sequence,regression,elements,inference,finance,settings,numtube,numchat,numscreen,numcam
-+Variant1,calculation,graph,solver,statistics,regression,distributions,inference,sequence,code,elements,finance,settings,numtube,numchat,numscreen,numcam
-+Variant2,calculation,graph,solver,regression,sequence,distributions,statistics,code,elements,inference,finance,settings,numtube,numchat,numscreen,numcam
-+Variant3,calculation,graph,solver,statistics,distributions,sequence,regression,inference,finance,elements,code,settings,numtube,numchat,numscreen,numcam
-+Variant4,calculation,graph,solver,statistics,regression,sequence,distributions,inference,finance,elements,code,settings,numtube,numchat,numscreen,numcam
++Default,calculation,graph,code,statistics,distributions,solver,sequence,regression,elements,inference,finance,settings,numtube,numchat,numscreen,numcam,numtok
++Variant1,calculation,graph,solver,statistics,regression,distributions,inference,sequence,code,elements,finance,settings,numtube,numchat,numscreen,numcam,numtok
++Variant2,calculation,graph,solver,regression,sequence,distributions,statistics,code,elements,inference,finance,settings,numtube,numchat,numscreen,numcam,numtok
++Variant3,calculation,graph,solver,statistics,distributions,sequence,regression,inference,finance,elements,code,settings,numtube,numchat,numscreen,numcam,numtok
++Variant4,calculation,graph,solver,statistics,regression,sequence,distributions,inference,finance,elements,code,settings,numtube,numchat,numscreen,numcam,numtok
 diff --git a/epsilon/apps/home/controller.cpp b/epsilon/apps/home/controller.cpp
 index 8dc01efaf4..a1ba087e17 100644
 --- a/epsilon/apps/home/controller.cpp
@@ -216,10 +216,10 @@ index 9b3aa8360b..bad59e45e0 100644
    bool appIsForbidden(I18n::Message appName) const;
 diff --git a/epsilon/apps/home/homebrew_apps.cpp b/epsilon/apps/home/homebrew_apps.cpp
 new file mode 100644
-index 0000000000..9c3dd3cc77
+index 0000000000..718b0ad29f
 --- /dev/null
 +++ b/epsilon/apps/home/homebrew_apps.cpp
-@@ -0,0 +1,29 @@
+@@ -0,0 +1,30 @@
 +#include "homebrew_apps.h"
 +
 +#include <stdint.h>
@@ -230,7 +230,7 @@ index 0000000000..9c3dd3cc77
 +
 +struct HomebrewConfig {
 +  char magic[16];
-+  uint32_t hiddenApps;  // bit 0: NumTube, bit 1: NumChat, bit 2: NumScreen, bit 3: NumCam
++  uint32_t hiddenApps;  // bit 0: NumTube, bit 1: NumChat, bit 2: NumScreen, bit 3: NumCam, bit 4: NumTok
 +};
 +
 +/* volatile: the value is patched in the image after compilation, the compiler
@@ -245,13 +245,14 @@ index 0000000000..9c3dd3cc77
 +  return (appName == I18n::Message::NumtubeApp && (hidden & 1)) ||
 +         (appName == I18n::Message::NumchatApp && (hidden & 2)) ||
 +         (appName == I18n::Message::NumscreenApp && (hidden & 4)) ||
-+         (appName == I18n::Message::NumcamApp && (hidden & 8));
++         (appName == I18n::Message::NumcamApp && (hidden & 8)) ||
++         (appName == I18n::Message::NumtokApp && (hidden & 16));
 +}
 +
 +}  // namespace Home
 diff --git a/epsilon/apps/home/homebrew_apps.h b/epsilon/apps/home/homebrew_apps.h
 new file mode 100644
-index 0000000000..a457aede12
+index 0000000000..4cc9dcae1a
 --- /dev/null
 +++ b/epsilon/apps/home/homebrew_apps.h
 @@ -0,0 +1,13 @@
@@ -261,7 +262,7 @@ index 0000000000..a457aede12
 +
 +namespace Home {
 +
-+/* Which homebrew apps (NumTube, NumChat, NumScreen) show on the Home screen. Both are
++/* Which homebrew apps (NumTube, NumChat, NumScreen, NumCam, NumTok) show on the Home screen. Both are
 + * always compiled in; the installer on the computer hides the ones the user
 + * did not pick by writing a bit mask into this firmware image (it finds the
 + * mask by its magic string, like it finds the version in the header). */
@@ -269,7 +270,7 @@ index 0000000000..a457aede12
 +
 +}  // namespace Home
 diff --git a/epsilon/apps/module.mak b/epsilon/apps/module.mak
-index e21c795826..735aa7982c 100644
+index e21c795826..b400b9cdc7 100644
 --- a/epsilon/apps/module.mak
 +++ b/epsilon/apps/module.mak
 @@ -32,7 +32,7 @@ $(call depends_on_image,$(PATH_apps)/title_bar_view.cpp,$(PATH_apps)/exam_icon.p
@@ -277,7 +278,7 @@ index e21c795826..735aa7982c 100644
  # Include the specific apps
  # FIXME Use flavors instead of EPSILON_APPS?
 -EPSILON_APPS ?= calculation graph code statistics distributions inference solver sequence regression elements finance settings
-+EPSILON_APPS ?= calculation graph code statistics distributions inference solver sequence regression elements finance settings numtube numchat numscreen numcam
++EPSILON_APPS ?= calculation graph code statistics distributions inference solver sequence regression elements finance settings numtube numchat numscreen numcam numtok
  
  _apps_classes := $(foreach a,$(EPSILON_APPS),$(call capitalize,$a)::App)
  _apps_snapshots_declaration := $(foreach a,$(_apps_classes),$a::Snapshot m_snapshot$(subst :,,$a)Snapshot;)
@@ -2993,6 +2994,1287 @@ index 0000000000..137a337756
 +};
 +
 +}  // namespace Numscreen
+diff --git a/epsilon/apps/numtok/Makefile b/epsilon/apps/numtok/Makefile
+new file mode 100644
+index 0000000000..e616670a2e
+--- /dev/null
++++ b/epsilon/apps/numtok/Makefile
+@@ -0,0 +1,12 @@
++# NumTok: TikTok on the calculator. Reuses NumTube's USB link (apps/numtube/link.cpp).
++SOURCES_apps += $(addprefix $(PATH_apps)/numtok/,$(addsuffix :-test, \
++  app.cpp \
++  tok_controller.cpp \
++  tok_view.cpp \
++  tok_player.cpp \
++  numtok_icon.png \
++))
++
++$(call depends_on_image,$(PATH_apps)/numtok/app.cpp,$(PATH_apps)/numtok/numtok_icon.png)
++
++$(call i18n_with_universal,numtok/i18n/base)
+diff --git a/epsilon/apps/numtok/app.cpp b/epsilon/apps/numtok/app.cpp
+new file mode 100644
+index 0000000000..2f7ab311b0
+--- /dev/null
++++ b/epsilon/apps/numtok/app.cpp
+@@ -0,0 +1,35 @@
++#include "app.h"
++
++#include <escher/container.h>
++#include <ion/events.h>
++
++#include "numtok_icon.h"
++
++namespace Numtok {
++
++const Escher::Image* App::Descriptor::icon() const {
++  return ImageStore::NumtokIcon;
++}
++
++App* App::Snapshot::unpack(Escher::Container* container) {
++  return new (container->currentAppBuffer()) App(this);
++}
++
++const App::Descriptor* App::Snapshot::descriptor() const {
++  constexpr static Descriptor s_descriptor;
++  return &s_descriptor;
++}
++
++App::App(Snapshot* snapshot)
++    : Escher::App(snapshot, &m_controller),
++      m_controller(&m_modalViewController),
++      m_usbTimer(&m_controller) {}
++
++void App::willBecomeInactive() {
++  // Give the USB port back, and leave the keyboard as we found it.
++  m_controller.disconnect();
++  Ion::Events::setShiftAlphaStatus(Ion::Events::ShiftAlphaStatus());
++  Escher::App::willBecomeInactive();
++}
++
++}  // namespace Numtok
+diff --git a/epsilon/apps/numtok/app.h b/epsilon/apps/numtok/app.h
+new file mode 100644
+index 0000000000..738e6adfad
+--- /dev/null
++++ b/epsilon/apps/numtok/app.h
+@@ -0,0 +1,51 @@
++#pragma once
++
++#include <apps/i18n.h>
++#include <escher/app.h>
++
++#include "tok_controller.h"
++
++namespace Numtok {
++
++class App : public Escher::App {
++ public:
++  class Descriptor : public Escher::App::Descriptor {
++   public:
++    I18n::Message name() const override { return I18n::Message::NumtokApp; }
++    I18n::Message upperName() const override {
++      return I18n::Message::NumtokAppCapital;
++    }
++    const Escher::Image* icon() const override;
++  };
++
++  class Snapshot : public Escher::App::Snapshot {
++   public:
++    App* unpack(Escher::Container* container) override;
++    const Descriptor* descriptor() const override;
++  };
++
++  void willBecomeInactive() override;
++  int numberOfTimers() override { return 1; }
++  Escher::Timer* timerAtIndex(int i) override { return &m_usbTimer; }
++
++ private:
++  // Keeps the USB control endpoint answering between screens.
++  class UsbTimer : public Escher::Timer {
++   public:
++    explicit UsbTimer(TokController* controller)
++        : Escher::Timer(1), m_controller(controller) {}
++
++   private:
++    bool fire() override {
++      m_controller->serviceLink();
++      return false;
++    }
++    TokController* m_controller;
++  };
++
++  App(Snapshot* snapshot);
++  TokController m_controller;
++  UsbTimer m_usbTimer;
++};
++
++}  // namespace Numtok
+diff --git a/epsilon/apps/numtok/i18n/base.de.i18n b/epsilon/apps/numtok/i18n/base.de.i18n
+new file mode 100644
+index 0000000000..38b32567e6
+--- /dev/null
++++ b/epsilon/apps/numtok/i18n/base.de.i18n
+@@ -0,0 +1 @@
++# NumTok has no translated strings; see base.universal.i18n.
+diff --git a/epsilon/apps/numtok/i18n/base.en.i18n b/epsilon/apps/numtok/i18n/base.en.i18n
+new file mode 100644
+index 0000000000..38b32567e6
+--- /dev/null
++++ b/epsilon/apps/numtok/i18n/base.en.i18n
+@@ -0,0 +1 @@
++# NumTok has no translated strings; see base.universal.i18n.
+diff --git a/epsilon/apps/numtok/i18n/base.es.i18n b/epsilon/apps/numtok/i18n/base.es.i18n
+new file mode 100644
+index 0000000000..38b32567e6
+--- /dev/null
++++ b/epsilon/apps/numtok/i18n/base.es.i18n
+@@ -0,0 +1 @@
++# NumTok has no translated strings; see base.universal.i18n.
+diff --git a/epsilon/apps/numtok/i18n/base.fr.i18n b/epsilon/apps/numtok/i18n/base.fr.i18n
+new file mode 100644
+index 0000000000..38b32567e6
+--- /dev/null
++++ b/epsilon/apps/numtok/i18n/base.fr.i18n
+@@ -0,0 +1 @@
++# NumTok has no translated strings; see base.universal.i18n.
+diff --git a/epsilon/apps/numtok/i18n/base.it.i18n b/epsilon/apps/numtok/i18n/base.it.i18n
+new file mode 100644
+index 0000000000..38b32567e6
+--- /dev/null
++++ b/epsilon/apps/numtok/i18n/base.it.i18n
+@@ -0,0 +1 @@
++# NumTok has no translated strings; see base.universal.i18n.
+diff --git a/epsilon/apps/numtok/i18n/base.nl.i18n b/epsilon/apps/numtok/i18n/base.nl.i18n
+new file mode 100644
+index 0000000000..38b32567e6
+--- /dev/null
++++ b/epsilon/apps/numtok/i18n/base.nl.i18n
+@@ -0,0 +1 @@
++# NumTok has no translated strings; see base.universal.i18n.
+diff --git a/epsilon/apps/numtok/i18n/base.pt.i18n b/epsilon/apps/numtok/i18n/base.pt.i18n
+new file mode 100644
+index 0000000000..38b32567e6
+--- /dev/null
++++ b/epsilon/apps/numtok/i18n/base.pt.i18n
+@@ -0,0 +1 @@
++# NumTok has no translated strings; see base.universal.i18n.
+diff --git a/epsilon/apps/numtok/i18n/base.universal.i18n b/epsilon/apps/numtok/i18n/base.universal.i18n
+new file mode 100644
+index 0000000000..574582794a
+--- /dev/null
++++ b/epsilon/apps/numtok/i18n/base.universal.i18n
+@@ -0,0 +1,2 @@
++NumtokApp = "NumTok"
++NumtokAppCapital = "NUMTOK"
+diff --git a/epsilon/apps/numtok/numtok_icon.png b/epsilon/apps/numtok/numtok_icon.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..c011e3e23ccd54cd5ec5344406ceb8149efc5f1d
+GIT binary patch
+literal 1824
+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
+O0000<MNUMnLSTaZ*@T(^
+
+literal 0
+HcmV?d00001
+
+diff --git a/epsilon/apps/numtok/protocol.h b/epsilon/apps/numtok/protocol.h
+new file mode 100644
+index 0000000000..4fb8e1a3f1
+--- /dev/null
++++ b/epsilon/apps/numtok/protocol.h
+@@ -0,0 +1,39 @@
++#pragma once
++
++#include <stdint.h>
++
++/* Frame types carried in TMIA frames between the calculator and the gateway.
++ * Keep in sync with gateway/numtok_service.py. Hello/HelloAck/Log are shared
++ * with NumTube (see apps/numtube/protocol.h).
++ *
++ * The gateway does the heavy work: it builds the feed, downloads the videos
++ * in advance and sends 320x240 pictures whose middle column (k_videoX,
++ * k_videoWidth) is the video, with its progress line and the pause sign
++ * already drawn. The calculator draws the text around it. */
++namespace Numtok {
++namespace Protocol {
++
++enum Type : uint8_t {
++  Feed = 0xB0,       // PC <- calc: UTF-8 query, empty for "Pour toi"
++  FeedReady = 0xB1,  // PC -> calc: u16 count (0: error), UTF-8 title or error
++  Play = 0xB2,       // PC <- calc: u16 index in the feed
++  Info = 0xB3,       // PC -> calc: u16 index, u16 count, u32 duration_ms,
++                     // u32 likes, comments, shares, views, then u8-length
++                     // strings: author, caption, sound
++  Video = 0xB4,      // PC -> calc: u16 index, u16 frame, u16 start tile,
++                     // u8 flags, tile ops
++  Ack = 0xB5,        // PC <- calc: u16 frame, once drawn
++  Control = 0xB6,    // PC <- calc: u8 command
++  Status = 0xB7,     // PC -> calc: UTF-8 text for the video area, empty to clear
++  Error = 0xB8,      // PC -> calc: UTF-8, this video cannot be played
++};
++
++enum Command : uint8_t { Stop = 0, Pause = 1, Resume = 2 };
++
++constexpr uint8_t k_endOfFrame = 1;
++constexpr uint16_t k_videoHeader = 7;
++constexpr int k_videoX = 92;
++constexpr int k_videoWidth = 136;
++
++}  // namespace Protocol
++}  // namespace Numtok
+diff --git a/epsilon/apps/numtok/tok_controller.cpp b/epsilon/apps/numtok/tok_controller.cpp
+new file mode 100644
+index 0000000000..1dc797d0cf
+--- /dev/null
++++ b/epsilon/apps/numtok/tok_controller.cpp
+@@ -0,0 +1,208 @@
++#include "tok_controller.h"
++
++#include <apps/apps_container.h>
++#include <ion/events.h>
++#include <ion/timing.h>
++#include <ion/usb.h>
++#include <string.h>
++
++#include "protocol.h"
++
++namespace Numtok {
++
++namespace {
++
++constexpr uint32_t k_feedTimeoutMs = 90000;
++
++void copyString(char* destination, size_t capacity, const char* source,
++                size_t length) {
++  size_t count = length < capacity - 1 ? length : capacity - 1;
++  // Never cut a UTF-8 sequence in two.
++  if (count < length) {
++    while (count > 0 && (static_cast<uint8_t>(source[count]) & 0xC0) == 0x80) {
++      count--;
++    }
++  }
++  memcpy(destination, source, count);
++  destination[count] = '\0';
++}
++
++void setAlphaLock(bool locked) {
++  using Status = Ion::Events::ShiftAlphaStatus;
++  // Through the container so that the status bar indicator follows.
++  AppsContainer::sharedAppsContainer()->setShiftAlphaStatus(
++      Status(Status::ShiftStatus::Inactive,
++             locked ? Status::AlphaStatus::Locked : Status::AlphaStatus::Inactive));
++}
++
++}  // namespace
++
++TokController::TokController(Escher::Responder* parentResponder)
++    : Escher::ViewController(parentResponder),
++      m_view(this),
++      m_player(&m_link),
++      m_screen(Screen::Search),
++      m_messageNeedsKey(false) {
++  m_query[0] = '\0';
++  m_message[0] = '\0';
++}
++
++void TokController::viewWillAppear() { showSearch(); }
++
++void TokController::showSearch() {
++  m_screen = Screen::Search;
++  m_messageNeedsKey = false;
++  setAlphaLock(true);
++  m_view.redrawAll();
++}
++
++void TokController::showMessage(const char* message) {
++  copyString(m_message, sizeof(m_message), message, strlen(message));
++  m_screen = Screen::Message;
++  m_view.redrawAll();
++}
++
++void TokController::showMessageNow(const char* message) {
++  showMessage(message);
++  AppsContainer::sharedAppsContainer()->redrawWindow();
++}
++
++void TokController::showErrorThenSearch(const char* message) {
++  showMessage(message);
++  m_messageNeedsKey = true;
++}
++
++bool TokController::ensureConnected() {
++  if (m_link.isConnected()) {
++    return true;
++  }
++  showMessageNow("Connexion au PC...\nOuvre NumSocial");
++  switch (m_link.connect()) {
++    case Numtube::Link::ConnectResult::Connected:
++      return true;
++    case Numtube::Link::ConnectResult::Cancelled:
++      showSearch();
++      return false;
++    case Numtube::Link::ConnectResult::NoCable:
++      showErrorThenSearch("Branche la calculatrice\nau PC avec le cable USB");
++      return false;
++  }
++  return false;
++}
++
++int TokController::openFeed(char* title, int titleCapacity) {
++  showMessageNow(m_query[0] == '\0' ? "Pour toi..." : "Recherche...");
++  if (!m_link.send(Protocol::Feed, reinterpret_cast<const uint8_t*>(m_query),
++                   static_cast<uint16_t>(strlen(m_query)))) {
++    m_link.disconnect();
++    showErrorThenSearch("Le PC ne repond pas.\nOuvre NumSocial");
++    return 0;
++  }
++  Numtube::KeyWatcher keys;
++  const uint64_t deadline = Ion::Timing::millis() + k_feedTimeoutMs;
++  while (Ion::Timing::millis() < deadline) {
++    const Ion::Keyboard::Key key = keys.next();
++    if (key == Ion::Keyboard::Key::Back || key == Ion::Keyboard::Key::Home) {
++      showSearch();
++      return 0;
++    }
++    if (!Numtube::cablePlugged()) {
++      showErrorThenSearch("Cable USB debranche");
++      return 0;
++    }
++    uint8_t type;
++    const uint8_t* payload;
++    uint16_t length;
++    if (!m_link.poll(&type, &payload, &length)) {
++      continue;
++    }
++    if (type == Protocol::Status && length > 0) {
++      char text[64];
++      copyString(text, sizeof(text), reinterpret_cast<const char*>(payload), length);
++      showMessageNow(text);
++    } else if (type == Protocol::FeedReady && length >= 2) {
++      const int count = payload[0] | (payload[1] << 8);
++      copyString(title, titleCapacity, reinterpret_cast<const char*>(payload + 2),
++                 length - 2);
++      if (count == 0) {
++        showErrorThenSearch(title[0] != '\0' ? title : "Aucune video");
++      }
++      return count;
++    }
++  }
++  showErrorThenSearch("Le PC ne repond pas.\nOuvre NumSocial");
++  return 0;
++}
++
++/* While connected, the calculator never hands control back to Epsilon's
++ * event loop (the USB port would stop answering), so a session runs in its
++ * own loops and the link is closed when the user goes back to typing. */
++void TokController::runSession() {
++  if (!ensureConnected()) {
++    return;
++  }
++  char title[40];
++  const int count = openFeed(title, sizeof(title));
++  if (count > 0) {
++    switch (m_player.run(count, title)) {
++      case TokPlayer::Exit::Stopped:
++        showSearch();
++        break;
++      case TokPlayer::Exit::Error:
++        showErrorThenSearch(m_player.errorMessage());
++        break;
++      case TokPlayer::Exit::Disconnected:
++        showErrorThenSearch("Cable USB debranche");
++        break;
++    }
++    // The player painted over the status bar too.
++    AppsContainer::sharedAppsContainer()->reloadTitleBarView();
++  }
++  m_link.disconnect();
++  m_view.redrawAll();
++  AppsContainer::sharedAppsContainer()->redrawWindow();
++}
++
++bool TokController::handleEvent(Ion::Events::Event event) {
++  /* Plugging the cable would normally open the "connected" DFU screen, which
++   * would kill the app. We take over the USB port when a feed opens. */
++  if (event == Ion::Events::USBEnumeration) {
++    Ion::USB::clearEnumerationInterrupt();
++    return true;
++  }
++  if (m_screen == Screen::Message) {
++    if (m_messageNeedsKey && event != Ion::Events::Home && event.isKeyPress()) {
++      showSearch();
++      return true;
++    }
++    return false;
++  }
++  size_t length = strlen(m_query);
++  if (event == Ion::Events::EXE || event == Ion::Events::OK) {
++    runSession();  // an empty field opens "Pour toi"
++    return true;
++  }
++  if (event == Ion::Events::Backspace) {
++    if (length > 0) {
++      m_query[length - 1] = '\0';
++      m_view.redrawAll();
++    }
++    return true;
++  }
++  if (event == Ion::Events::Clear) {
++    m_query[0] = '\0';
++    m_view.redrawAll();
++    return true;
++  }
++  char buffer[4] = {0};
++  size_t size = Ion::Events::copyText(static_cast<uint8_t>(event), buffer, sizeof(buffer));
++  if (size == 1 && length + 1 < k_queryCapacity) {
++    m_query[length] = buffer[0];
++    m_query[length + 1] = '\0';
++    m_view.redrawAll();
++    return true;
++  }
++  return false;
++}
++
++}  // namespace Numtok
+diff --git a/epsilon/apps/numtok/tok_controller.h b/epsilon/apps/numtok/tok_controller.h
+new file mode 100644
+index 0000000000..398207f508
+--- /dev/null
++++ b/epsilon/apps/numtok/tok_controller.h
+@@ -0,0 +1,51 @@
++#pragma once
++
++#include <apps/numtube/link.h>
++#include <escher/view_controller.h>
++
++#include "tok_player.h"
++#include "tok_view.h"
++
++namespace Numtok {
++
++/* The home screen of NumTok: a field to type a creator's name (empty for the
++ * "Pour toi" feed), and the messages shown while the feed loads. Once the
++ * feed is there, TokPlayer takes the whole screen until the user leaves. */
++class TokController : public Escher::ViewController {
++ public:
++  explicit TokController(Escher::Responder* parentResponder);
++
++  enum class Screen { Search, Message };
++  static constexpr int k_queryCapacity = 40;
++
++  Escher::View* view() override { return &m_view; }
++  bool handleEvent(Ion::Events::Event event) override;
++  void viewWillAppear() override;
++  void disconnect() { m_link.disconnect(); }
++  void serviceLink() { m_link.service(); }
++
++  // Accessors for TokView.
++  Screen screen() const { return m_screen; }
++  const char* query() const { return m_query; }
++  const char* message() const { return m_message; }
++
++ private:
++  void showSearch();
++  void showMessage(const char* message);
++  void showMessageNow(const char* message);
++  void showErrorThenSearch(const char* message);
++  bool ensureConnected();
++  void runSession();
++  // Returns the number of videos, 0 when the feed could not be opened.
++  int openFeed(char* title, int titleCapacity);
++
++  TokView m_view;
++  Numtube::Link m_link;
++  TokPlayer m_player;
++  Screen m_screen;
++  char m_query[k_queryCapacity];
++  char m_message[120];
++  bool m_messageNeedsKey;
++};
++
++}  // namespace Numtok
+diff --git a/epsilon/apps/numtok/tok_player.cpp b/epsilon/apps/numtok/tok_player.cpp
+new file mode 100644
+index 0000000000..ee6e3dbe8d
+--- /dev/null
++++ b/epsilon/apps/numtok/tok_player.cpp
+@@ -0,0 +1,514 @@
++#include "tok_player.h"
++
++#include <ion/display.h>
++#include <ion/timing.h>
++#include <kandinsky/font.h>
++#include <string.h>
++
++#if !defined(PLATFORM_DEVICE)
++#include <stdio.h>
++#include <stdlib.h>
++#endif
++
++#include "protocol.h"
++#include "tok_view.h"
++
++namespace Numtok {
++
++namespace {
++
++using Protocol::k_videoWidth;
++using Protocol::k_videoX;
++
++constexpr int k_screenWidth = Ion::Display::Width;
++constexpr int k_screenHeight = Ion::Display::Height;
++constexpr int k_videoEnd = k_videoX + k_videoWidth;
++constexpr int k_panelWidth = k_videoX;  // both side panels are this wide
++constexpr int k_rightX = k_videoEnd;
++constexpr int k_rightCenter = k_rightX + k_panelWidth / 2;
++
++constexpr KDFont::Size k_small = KDFont::Size::Small;
++constexpr int k_smallWidth = KDFont::GlyphMaxWidth(k_small);
++constexpr int k_smallHeight = KDFont::GlyphHeight(k_small);
++constexpr int k_panelColumns = (k_panelWidth - 8) / k_smallWidth;
++constexpr int k_videoColumns = (k_videoWidth - 8) / k_smallWidth;
++
++// No data at all from the gateway for this long while a video plays: it is gone.
++constexpr uint32_t k_gatewayTimeoutMs = 30000;
++
++KDContext* screenContext() {
++  KDContext* context = Ion::Display::Context::SharedContext;
++  context->setOrigin(KDPointZero);
++  context->setClippingRect(KDRect(0, 0, k_screenWidth, k_screenHeight));
++  return context;
++}
++
++uint32_t read32(const uint8_t* p) {
++  return static_cast<uint32_t>(p[0]) | (static_cast<uint32_t>(p[1]) << 8) |
++         (static_cast<uint32_t>(p[2]) << 16) | (static_cast<uint32_t>(p[3]) << 24);
++}
++
++void copyText(char* destination, int capacity, const uint8_t* source, int length) {
++  int count = length < capacity - 1 ? length : capacity - 1;
++  memcpy(destination, source, count);
++  // Never leave half a UTF-8 sequence for the font renderer.
++  if (count < length) {
++    while (count > 0 && (source[count] & 0xC0) == 0x80) {
++      count--;
++    }
++  }
++  destination[count] = '\0';
++}
++
++bool isGlyphStart(uint8_t byte) {
++  // Accents arrive as combining marks (lead byte 0xCC/0xCD): they take no width.
++  return (byte & 0xC0) != 0x80 && byte != 0xCC && byte != 0xCD;
++}
++
++int glyphCount(const char* text, int bytes) {
++  int count = 0;
++  for (int i = 0; i < bytes; i++) {
++    count += isGlyphStart(static_cast<uint8_t>(text[i]));
++  }
++  return count;
++}
++
++/* Byte length of the next line of at most `columns` glyphs: up to a '\n', or
++ * cut after the last space that fits (in the middle of a word only when the
++ * word alone is too long). */
++int lineLength(const char* text, int columns) {
++  int bytes = 0;
++  int glyphs = 0;
++  int lastSpace = -1;
++  while (text[bytes] != '\0' && text[bytes] != '\n') {
++    if (isGlyphStart(static_cast<uint8_t>(text[bytes]))) {
++      if (glyphs == columns) {
++        return lastSpace > 0 ? lastSpace : bytes;
++      }
++      glyphs++;
++    }
++    if (text[bytes] == ' ') {
++      lastSpace = bytes;
++    }
++    bytes++;
++  }
++  return bytes;
++}
++
++// Draws word-wrapped text; returns the y below the last line drawn.
++int drawWrapped(KDContext* ctx, const char* text, int x, int y, int columns,
++                int maxLines, KDGlyph::Style style, bool centered = false,
++                int centerWidth = 0) {
++  for (int line = 0; line < maxLines && *text != '\0'; line++) {
++    int bytes = lineLength(text, columns);
++    const bool last = line == maxLines - 1;
++    int drawX = x;
++    if (centered) {
++      drawX = x + (centerWidth - glyphCount(text, bytes) * k_smallWidth) / 2;
++    }
++    if (last && text[bytes] != '\0' && text[bytes] != '\n' && bytes > 0) {
++      // Out of room: end with "..." in place of the last glyphs.
++      int keep = bytes;
++      int glyphs = glyphCount(text, keep);
++      while (keep > 0 && glyphs > columns - 3) {
++        keep--;
++        while (keep > 0 && !isGlyphStart(static_cast<uint8_t>(text[keep]))) {
++          keep--;
++        }
++        glyphs = glyphCount(text, keep);
++      }
++      const KDPoint end = ctx->drawString(text, KDPoint(drawX, y), style, keep);
++      ctx->drawString("...", end, style);
++      return y + k_smallHeight;
++    }
++    ctx->drawString(text, KDPoint(drawX, y), style, bytes);
++    y += k_smallHeight;
++    text += bytes;
++    while (*text == ' ' || *text == '\n') {
++      text++;
++    }
++  }
++  return y;
++}
++
++void formatCount(uint32_t value, char* out) {
++  // 706500 -> "706,5K", 2800000 -> "2,8M", like TikTok.
++  const char* suffix = "";
++  uint32_t divisor = 1;
++  if (value >= 1000000000) {
++    suffix = "Md";
++    divisor = 1000000000;
++  } else if (value >= 1000000) {
++    suffix = "M";
++    divisor = 1000000;
++  } else if (value >= 1000) {
++    suffix = "K";
++    divisor = 1000;
++  }
++  const uint32_t whole = value / divisor;
++  const uint32_t tenth = divisor > 1 ? (value % divisor) / (divisor / 10) : 0;
++  char digits[12];
++  int n = 0;
++  uint32_t rest = whole;
++  do {
++    digits[n++] = static_cast<char>('0' + rest % 10);
++    rest /= 10;
++  } while (rest > 0);
++  char* p = out;
++  while (n > 0) {
++    *p++ = digits[--n];
++  }
++  if (tenth > 0 && whole < 100) {
++    *p++ = ',';
++    *p++ = static_cast<char>('0' + tenth);
++  }
++  strlcpy(p, suffix, 3);
++}
++
++void drawCentered(KDContext* ctx, const char* text, int centerX, int y,
++                  KDGlyph::Style style) {
++  const int width = glyphCount(text, static_cast<int>(strlen(text))) * k_smallWidth;
++  ctx->drawString(text, KDPoint(centerX - width / 2, y), style);
++}
++
++// TikTok's three icons, in white, about 24x20 px, centred on cx.
++void drawHeart(KDContext* ctx, int cx, int y) {
++  ctx->fillAntialiasedCircle(KDPoint(cx - 12, y), 6, k_white, k_black);
++  ctx->fillAntialiasedCircle(KDPoint(cx, y), 6, k_white, k_black);
++  for (int r = 0; r < 13; r++) {
++    ctx->fillRect(KDRect(cx - 12 + r, y + 6 + r, 24 - 2 * r, 1), k_white);
++  }
++}
++
++void drawBubble(KDContext* ctx, int cx, int y) {
++  ctx->fillAntialiasedCircle(KDPoint(cx - 12, y), 8, k_white, k_black);
++  ctx->fillAntialiasedCircle(KDPoint(cx - 4, y), 8, k_white, k_black);
++  ctx->fillRect(KDRect(cx - 8, y, 8, 16), k_white);
++  for (int r = 0; r < 5; r++) {
++    ctx->fillRect(KDRect(cx - 9, y + 15 + r, 5 - r, 1), k_white);
++  }
++  for (int d = -7; d <= 3; d += 5) {
++    ctx->fillRect(KDRect(cx + d, y + 7, 3, 3), k_black);
++  }
++}
++
++void drawShare(KDContext* ctx, int cx, int y) {
++  ctx->fillRect(KDRect(cx - 11, y + 7, 13, 6), k_white);
++  ctx->fillRect(KDRect(cx - 11, y + 7, 5, 11), k_white);  // the arrow's curve
++  for (int r = 0; r < 19; r++) {
++    const int half = 9 - (r < 9 ? 9 - r : r - 9);
++    ctx->fillRect(KDRect(cx + 2, y + 1 + r, half + 1, 1), k_white);
++  }
++}
++
++#if !defined(PLATFORM_DEVICE)
++/* Simulator-only test hook: with NUMTOK_SCREENSHOT=/path/prefix, writes the
++ * screen as a PPM file every 50 frames (macOS blocks normal captures). */
++void debugScreenshot(uint32_t frameCount) {
++  const char* prefix = getenv("NUMTOK_SCREENSHOT");
++  if (prefix == nullptr || frameCount % 50 != 0) {
++    return;
++  }
++  char path[512];
++  snprintf(path, sizeof(path), "%s-%04u.ppm", prefix, static_cast<unsigned>(frameCount));
++  FILE* file = fopen(path, "wb");
++  if (file == nullptr) {
++    return;
++  }
++  fprintf(file, "P6 %d %d 255\n", k_screenWidth, k_screenHeight);
++  KDColor line[k_screenWidth];
++  for (int y = 0; y < k_screenHeight; y++) {
++    Ion::Display::pullRect(KDRect(0, y, k_screenWidth, 1), line);
++    for (KDColor c : line) {
++      const uint8_t rgb[3] = {c.red(), c.green(), c.blue()};
++      fwrite(rgb, 1, 3, file);
++    }
++  }
++  fclose(file);
++}
++uint32_t s_framesShown = 0;
++#endif
++
++}  // namespace
++
++static_assert(sizeof(KDColor) == sizeof(uint16_t), "KDColor must be RGB565");
++
++TokPlayer::TokPlayer(Numtube::Link* link)
++    : m_link(link),
++      m_decoder(m_rowBuffer, this),
++      m_index(0),
++      m_count(0),
++      m_hasInfo(false),
++      m_paused(false),
++      m_videoFailed(false) {
++  m_feedTitle[0] = m_error[0] = '\0';
++}
++
++void TokPlayer::push(int x, int y, int width, const uint16_t* pixels) {
++  int start = x < k_videoX ? k_videoX : x;
++  int end = x + width > k_videoEnd ? k_videoEnd : x + width;
++  if (start >= end) {
++    return;
++  }
++  Ion::Display::pushRect(KDRect(start, y, end - start, 1),
++                         reinterpret_cast<const KDColor*>(pixels + (start - x)));
++}
++
++void TokPlayer::drawLeftPanel() {
++  KDContext* ctx = screenContext();
++  ctx->fillRect(KDRect(0, 0, k_panelWidth, k_screenHeight), k_black);
++  drawLogo(ctx, KDPoint((k_panelWidth - 60) / 2, 4), k_black);
++  const KDGlyph::Style title{k_cyan, k_black, k_small};
++  drawWrapped(ctx, m_feedTitle, 4, 30, k_panelColumns, 1, title, true, k_panelWidth - 8);
++  if (!m_hasInfo) {
++    return;
++  }
++  int y = 56;
++  ctx->fillRect(KDRect(4, y - 6, k_panelWidth - 8, 1), KDColor::RGB24(0x303030));
++  char author[48] = "@";
++  strlcpy(author + 1, m_info.author, sizeof(author) - 1);
++  y = drawWrapped(ctx, author, 4, y, k_panelColumns, 2, {k_white, k_black, k_small});
++  y += 6;
++  const int soundTop = k_screenHeight - 2 * k_smallHeight - 6;
++  const int captionLines = (soundTop - 4 - y) / k_smallHeight;
++  drawWrapped(ctx, m_info.caption, 4, y, k_panelColumns, captionLines,
++              {KDColor::RGB24(0xE0E0E0), k_black, k_small});
++  if (m_info.sound[0] != '\0') {
++    ctx->drawString("Son :", KDPoint(4, soundTop), {k_pink, k_black, k_small});
++    drawWrapped(ctx, m_info.sound, 4, soundTop + k_smallHeight, k_panelColumns, 1,
++                {k_grey, k_black, k_small});
++  }
++}
++
++void TokPlayer::drawRightPanel() {
++  KDContext* ctx = screenContext();
++  ctx->fillRect(KDRect(k_rightX, 0, k_panelWidth, k_screenHeight), k_black);
++  const KDGlyph::Style count{k_white, k_black, k_small};
++  const KDGlyph::Style muted{k_grey, k_black, k_small};
++  char text[24];
++  if (m_hasInfo) {
++    drawHeart(ctx, k_rightCenter, 14);
++    formatCount(m_info.likes, text);
++    drawCentered(ctx, text, k_rightCenter, 36, count);
++    drawBubble(ctx, k_rightCenter, 64);
++    formatCount(m_info.comments, text);
++    drawCentered(ctx, text, k_rightCenter, 86, count);
++    drawShare(ctx, k_rightCenter, 112);
++    formatCount(m_info.shares, text);
++    drawCentered(ctx, text, k_rightCenter, 136, count);
++    formatCount(m_info.views, text);
++    strlcat(text, " vues", sizeof(text));
++    drawCentered(ctx, text, k_rightCenter, 166, muted);
++  }
++  // Position in the feed: "3 / 24".
++  char position[24];
++  formatCount(static_cast<uint32_t>(m_index + 1), position);
++  strlcat(position, " / ", sizeof(position));
++  formatCount(static_cast<uint32_t>(m_count), text);
++  strlcat(position, text, sizeof(position));
++  drawCentered(ctx, position, k_rightCenter, 196, count);
++  drawCentered(ctx, m_paused ? "OK : lecture" : "OK : pause", k_rightCenter, 216, muted);
++}
++
++void TokPlayer::drawVideoMessage(const char* text, KDColor color) {
++  KDContext* ctx = screenContext();
++  ctx->fillRect(KDRect(k_videoX, 0, k_videoWidth, k_screenHeight), k_black);
++  int lines = 0;
++  for (const char* t = text; *t != '\0';) {
++    t += lineLength(t, k_videoColumns);
++    while (*t == ' ' || *t == '\n') {
++      t++;
++    }
++    lines++;
++  }
++  lines = lines > 8 ? 8 : lines;
++  drawWrapped(ctx, text, k_videoX + 4, (k_screenHeight - lines * k_smallHeight) / 2,
++              k_videoColumns, 8, {color, k_black, k_small}, true, k_videoWidth - 8);
++}
++
++void TokPlayer::sendControl(uint8_t command) {
++  m_link->send(Protocol::Control, &command, 1);
++}
++
++void TokPlayer::requestVideo(int index) {
++  m_index = index;
++  m_hasInfo = false;
++  m_paused = false;
++  m_videoFailed = false;
++  drawLeftPanel();
++  drawRightPanel();
++  drawVideoMessage("", k_white);
++  const uint8_t request[2] = {static_cast<uint8_t>(index), static_cast<uint8_t>(index >> 8)};
++  m_link->send(Protocol::Play, request, sizeof(request));
++}
++
++bool TokPlayer::parseInfo(const uint8_t* payload, uint16_t length) {
++  constexpr int k_fixed = 24;
++  if (length < k_fixed) {
++    return false;
++  }
++  const int index = payload[0] | (payload[1] << 8);
++  if (index != m_index) {
++    return false;  // for a video the user already swiped away
++  }
++  m_count = payload[2] | (payload[3] << 8);
++  m_info.durationMs = read32(payload + 4);
++  m_info.likes = read32(payload + 8);
++  m_info.comments = read32(payload + 12);
++  m_info.shares = read32(payload + 16);
++  m_info.views = read32(payload + 20);
++  int cursor = k_fixed;
++  char* fields[] = {m_info.author, m_info.caption, m_info.sound};
++  const int capacities[] = {sizeof(m_info.author), sizeof(m_info.caption),
++                            sizeof(m_info.sound)};
++  for (int i = 0; i < 3; i++) {
++    fields[i][0] = '\0';
++    if (cursor >= length) {
++      continue;
++    }
++    const int size = payload[cursor++];
++    if (cursor + size > length) {
++      break;
++    }
++    copyText(fields[i], capacities[i], payload + cursor, size);
++    cursor += size;
++  }
++  m_hasInfo = true;
++  return true;
++}
++
++void TokPlayer::handleFrame(uint8_t type, const uint8_t* payload, uint16_t length) {
++  switch (type) {
++    case Protocol::Info:
++      if (parseInfo(payload, length)) {
++        drawLeftPanel();
++        drawRightPanel();
++      }
++      break;
++    case Protocol::Video: {
++      if (length < Protocol::k_videoHeader) {
++        break;
++      }
++      const int index = payload[0] | (payload[1] << 8);
++      if (index != m_index) {
++        break;  // still on the wire from the previous video
++      }
++      const uint16_t start = static_cast<uint16_t>(payload[4] | (payload[5] << 8));
++      m_decoder.decode(start, payload + Protocol::k_videoHeader,
++                       length - Protocol::k_videoHeader);
++      if (payload[6] & Protocol::k_endOfFrame) {
++        m_link->send(Protocol::Ack, payload + 2, 2);
++#if !defined(PLATFORM_DEVICE)
++        debugScreenshot(++s_framesShown);
++#endif
++      }
++      break;
++    }
++    case Protocol::Status:
++      if (length > 0 && !m_videoFailed) {
++        char text[64];
++        copyText(text, sizeof(text), payload, length);
++        drawVideoMessage(text, k_white);
++      }
++      break;
++    case Protocol::Error: {
++      char text[120];
++      copyText(text, sizeof(text), payload, length);
++      m_videoFailed = true;
++      drawVideoMessage(text, k_pink);
++      break;
++    }
++    default:
++      break;
++  }
++}
++
++bool TokPlayer::handleKey(Ion::Keyboard::Key key, Exit* exit) {
++  using Ion::Keyboard::Key;
++  switch (key) {
++    case Key::Back:
++    case Key::Home:
++    case Key::OnOff:
++      *exit = Exit::Stopped;
++      return true;
++    case Key::Down:
++    case Key::Right:
++      if (m_index + 1 < m_count) {
++        requestVideo(m_index + 1);
++      }
++      break;
++    case Key::Up:
++    case Key::Left:
++      if (m_index > 0) {
++        requestVideo(m_index - 1);
++      }
++      break;
++    case Key::OK:
++    case Key::EXE:
++      if (m_hasInfo && !m_videoFailed) {
++        m_paused = !m_paused;
++        sendControl(m_paused ? Protocol::Pause : Protocol::Resume);
++        drawRightPanel();
++      }
++      break;
++    default:
++      break;
++  }
++  return false;
++}
++
++TokPlayer::Exit TokPlayer::run(int count, const char* feedTitle) {
++  m_count = count;
++  strlcpy(m_feedTitle, feedTitle, sizeof(m_feedTitle));
++  m_error[0] = '\0';
++  Ion::Display::pushRectUniform(KDRect(0, 0, k_screenWidth, k_screenHeight), k_black);
++  requestVideo(0);
++
++  Numtube::KeyWatcher keys;
++  Exit exit = Exit::Stopped;
++  uint64_t lastData = Ion::Timing::millis();
++  while (true) {
++    Ion::Keyboard::Key key;
++    bool done = false;
++    while (!done && (key = keys.next()) != Ion::Keyboard::Key::None) {
++      const int before = m_index;
++      done = handleKey(key, &exit);
++      if (m_index != before) {
++        lastData = Ion::Timing::millis();
++      }
++    }
++    if (done) {
++      sendControl(Protocol::Stop);
++      break;
++    }
++    if (!Numtube::cablePlugged()) {
++      exit = Exit::Disconnected;
++      break;
++    }
++    uint8_t type;
++    const uint8_t* payload;
++    uint16_t length;
++    // Drain what is ready, but come back regularly for the keyboard.
++    for (int i = 0; i < 64 && m_link->poll(&type, &payload, &length); i++) {
++      lastData = Ion::Timing::millis();
++      handleFrame(type, payload, length);
++    }
++    if (!m_paused && !m_videoFailed &&
++        Ion::Timing::millis() - lastData > k_gatewayTimeoutMs) {
++      strlcpy(m_error, "Plus de reponse du PC", sizeof(m_error));
++      exit = Exit::Error;
++      break;
++    }
++  }
++  // Throw away what was already on the wire so the next screen starts clean.
++  const uint64_t drainEnd = Ion::Timing::millis() + 150;
++  uint8_t type;
++  const uint8_t* payload;
++  uint16_t length;
++  while (Ion::Timing::millis() < drainEnd) {
++    m_link->poll(&type, &payload, &length);
++  }
++  return exit;
++}
++
++}  // namespace Numtok
+diff --git a/epsilon/apps/numtok/tok_player.h b/epsilon/apps/numtok/tok_player.h
+new file mode 100644
+index 0000000000..8ae1d89ae5
+--- /dev/null
++++ b/epsilon/apps/numtok/tok_player.h
+@@ -0,0 +1,62 @@
++#pragma once
++
++#include <apps/numtube/link.h>
++#include <apps/numtube/tile_decoder.h>
++#include <kandinsky/context.h>
++#include <stdint.h>
++
++namespace Numtok {
++
++/* The full-screen feed, TikTok style: one vertical video in the middle of the
++ * screen, the author and caption on the left, the counters on the right.
++ * Down: next video, up: previous one, OK: pause. Blocks until the user
++ * leaves with Back or Home. */
++class TokPlayer {
++ public:
++  explicit TokPlayer(Numtube::Link* link);
++
++  enum class Exit { Stopped, Error, Disconnected };
++  Exit run(int count, const char* feedTitle);
++  const char* errorMessage() const { return m_error; }
++
++  // TileDecoder's blitter interface. Only the video column is drawn.
++  void push(int x, int y, int width, const uint16_t* pixels);
++
++  static constexpr int k_rows = 60;  // 320x240 pictures: 60 rows of 4x4 tiles
++  using Decoder = Numtube::TileDecoder<TokPlayer, k_rows>;
++
++ private:
++  struct Info {
++    uint32_t durationMs;
++    uint32_t likes;
++    uint32_t comments;
++    uint32_t shares;
++    uint32_t views;
++    char author[44];
++    char caption[184];
++    char sound[64];
++  };
++
++  void requestVideo(int index);
++  bool handleKey(Ion::Keyboard::Key key, Exit* exit);
++  void handleFrame(uint8_t type, const uint8_t* payload, uint16_t length);
++  bool parseInfo(const uint8_t* payload, uint16_t length);
++  void sendControl(uint8_t command);
++  void drawLeftPanel();
++  void drawRightPanel();
++  void drawVideoMessage(const char* text, KDColor color);
++
++  Numtube::Link* m_link;
++  Decoder m_decoder;
++  uint16_t m_rowBuffer[Decoder::k_rowBufferPixels];
++  Info m_info;
++  int m_index;
++  int m_count;
++  bool m_hasInfo;
++  bool m_paused;
++  bool m_videoFailed;
++  char m_feedTitle[40];
++  char m_error[96];
++};
++
++}  // namespace Numtok
+diff --git a/epsilon/apps/numtok/tok_view.cpp b/epsilon/apps/numtok/tok_view.cpp
+new file mode 100644
+index 0000000000..e2e3c8ebfe
+--- /dev/null
++++ b/epsilon/apps/numtok/tok_view.cpp
+@@ -0,0 +1,115 @@
++#include "tok_view.h"
++
++#include <kandinsky/font.h>
++#include <string.h>
++
++#include "tok_controller.h"
++
++namespace Numtok {
++
++namespace {
++
++constexpr int k_smallWidth = KDFont::GlyphMaxWidth(KDFont::Size::Small);
++constexpr int k_smallHeight = KDFont::GlyphHeight(KDFont::Size::Small);
++constexpr int k_largeWidth = KDFont::GlyphMaxWidth(KDFont::Size::Large);
++constexpr int k_largeHeight = KDFont::GlyphHeight(KDFont::Size::Large);
++constexpr int k_screenWidth = 320;
++
++int glyphs(const char* text) {
++  int count = 0;
++  for (const char* c = text; *c != '\0'; c++) {
++    const uint8_t byte = static_cast<uint8_t>(*c);
++    count += (byte & 0xC0) != 0x80 && byte != 0xCC && byte != 0xCD;
++  }
++  return count;
++}
++
++KDPoint centered(const char* text, int y, int glyphWidth) {
++  return KDPoint((k_screenWidth - glyphs(text) * glyphWidth) / 2, y);
++}
++
++}  // namespace
++
++void drawLogo(KDContext* ctx, KDPoint p, KDColor background) {
++  // "Num" in white, "Tok" in pink, over TikTok's cyan and pink line.
++  const KDPoint end = ctx->drawString("Num", p, {k_white, background, KDFont::Size::Large});
++  ctx->drawString("Tok", end, {k_pink, background, KDFont::Size::Large});
++  const int width = 6 * k_largeWidth;
++  ctx->fillRect(KDRect(p.x(), p.y() + k_largeHeight + 1, width / 2, 2), k_cyan);
++  ctx->fillRect(KDRect(p.x() + width / 2, p.y() + k_largeHeight + 1, width / 2, 2), k_pink);
++}
++
++void TokView::drawRect(KDContext* ctx, KDRect rect) const {
++  ctx->fillRect(bounds(), k_black);
++  if (m_controller->screen() == TokController::Screen::Search) {
++    drawSearch(ctx);
++  } else {
++    drawMessage(ctx);
++  }
++}
++
++void TokView::drawSearch(KDContext* ctx) const {
++  drawLogo(ctx, KDPoint((k_screenWidth - 6 * k_largeWidth) / 2, 18), k_black);
++
++  const KDRect field(16, 56, k_screenWidth - 32, k_largeHeight + 16);
++  ctx->fillRect(field, k_field);
++  ctx->fillRect(KDRect(16, field.bottom(), field.width() / 2, 2), k_cyan);
++  ctx->fillRect(KDRect(16 + field.width() / 2, field.bottom(), field.width() / 2, 2),
++                k_pink);
++
++  const char* query = m_controller->query();
++  const KDGlyph::Style input{k_white, k_field, KDFont::Size::Large};
++  KDPoint end(24, 64);
++  if (query[0] == '\0') {
++    ctx->drawString("Pour toi", end, {k_grey, k_field, KDFont::Size::Large});
++  } else {
++    const int columns = (field.width() - 16) / k_largeWidth - 2;
++    const int length = static_cast<int>(strlen(query));
++    const char* visible = query + (length > columns ? length - columns : 0);
++    end = ctx->drawString("@", end, input);
++    end = ctx->drawString(visible, end, input);
++  }
++  ctx->fillRect(KDRect(end.x(), 64, 2, k_largeHeight), k_white);
++
++  const KDGlyph::Style hint{k_grey, k_black, KDFont::Size::Small};
++  const KDGlyph::Style strong{k_white, k_black, KDFont::Size::Small};
++  const char* lines[] = {
++      "EXE sans rien taper : Pour toi",
++      "ou tape un pseudo (ex : khaby lame)",
++      "",
++      "bas / haut : video suivante / avant",
++      "OK : pause    retour : ici",
++  };
++  int y = 112;
++  for (const char* line : lines) {
++    ctx->drawString(line, centered(line, y, k_smallWidth), y < 140 ? strong : hint);
++    y += k_smallHeight + 4;
++  }
++  const char* footer = "Garde NumSocial ouvert sur le PC";
++  ctx->drawString(footer, centered(footer, 200, k_smallWidth),
++                  {k_pink, k_black, KDFont::Size::Small});
++}
++
++void TokView::drawMessage(KDContext* ctx) const {
++  drawLogo(ctx, KDPoint((k_screenWidth - 6 * k_largeWidth) / 2, 40), k_black);
++  const char* message = m_controller->message();
++  int y = 100;
++  const char* line = message;
++  const KDGlyph::Style style{k_white, k_black, KDFont::Size::Large};
++  char buffer[40];
++  while (*line != '\0') {
++    const char* end = strchr(line, '\n');
++    size_t bytes = end ? static_cast<size_t>(end - line) : strlen(line);
++    size_t copy = bytes < sizeof(buffer) - 1 ? bytes : sizeof(buffer) - 1;
++    memcpy(buffer, line, copy);
++    buffer[copy] = '\0';
++    ctx->drawString(buffer, centered(buffer, y, k_largeWidth), style);
++    y += k_largeHeight + 4;
++    line += bytes;
++    if (*line == '\n') {
++      line++;
++    }
++  }
++}
++
++}  // namespace Numtok
+diff --git a/epsilon/apps/numtok/tok_view.h b/epsilon/apps/numtok/tok_view.h
+new file mode 100644
+index 0000000000..17324c1dae
+--- /dev/null
++++ b/epsilon/apps/numtok/tok_view.h
+@@ -0,0 +1,32 @@
++#pragma once
++
++#include <escher/view.h>
++
++namespace Numtok {
++
++class TokController;
++
++// TikTok's colours, shared with the player.
++constexpr KDColor k_black = KDColorBlack;
++constexpr KDColor k_white = KDColorWhite;
++constexpr KDColor k_cyan = KDColor::RGB24(0x25F4EE);
++constexpr KDColor k_pink = KDColor::RGB24(0xFE2C55);
++constexpr KDColor k_grey = KDColor::RGB24(0x8A8A8A);
++constexpr KDColor k_field = KDColor::RGB24(0x1F1F1F);
++
++// Draws "NumTok" with TikTok's cyan and pink shadow, its top left at p.
++void drawLogo(KDContext* ctx, KDPoint p, KDColor background);
++
++class TokView : public Escher::View {
++ public:
++  explicit TokView(const TokController* controller) : m_controller(controller) {}
++  void drawRect(KDContext* ctx, KDRect rect) const override;
++  void redrawAll() { markRectAsDirty(bounds()); }
++
++ private:
++  void drawSearch(KDContext* ctx) const;
++  void drawMessage(KDContext* ctx) const;
++  const TokController* m_controller;
++};
++
++}  // namespace Numtok
 diff --git a/epsilon/apps/numtube/Makefile b/epsilon/apps/numtube/Makefile
 new file mode 100644
 index 0000000000..5ec8b4c403
